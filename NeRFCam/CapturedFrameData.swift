@@ -22,7 +22,7 @@ struct CapturedFrameData: Codable {
     
     
     
-    init(arFrame: ARFrame, filename: String) {
+    init(arFrame: ARFrame, width: CGFloat, height: CGFloat, filename: String) {
         // NeRF Studio needs the rows not the columns of the extrinsic matrix
         let transformMatrix = arFrame.camera.transform.transpose
         let intrinsics = arFrame.camera.intrinsics
@@ -33,8 +33,10 @@ struct CapturedFrameData: Codable {
         fl_y = intrinsics.columns.1.y
         cx = intrinsics.columns.2.x
         cy = intrinsics.columns.2.y
-        w = imageResolution.width
-        h = imageResolution.height
+        w = width
+        h = height
+        //w = imageResolution.width
+        //h = imageResolution.height
         
     }
 }

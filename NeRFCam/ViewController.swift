@@ -138,12 +138,20 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             isPressed = false
             infoText.text = "Frames Captured: \(framesCapturedCount + 1)"
             // save image data
-            let image = UIImage(pixelBuffer: frame.capturedImage)
+            //let image = UIImage(pixelBuffer: frame.get)
+            let image = frame.getCapturedImage(inSceneView: arView)
+            
+            let height = image!.size.height * (image?.scale ?? 0)!
+            let width = image!.size.width * (image?.scale ?? 0)!
+            
+            print("size:")
+            print(height)
+            print(width)
             
             if let data = image?.jpegData(compressionQuality: 1.0 ) {
                 let filename = dataPath.appendingPathComponent("frame\(framesCapturedCount).jpeg")
                 try? data.write(to: filename)
-                let capturedFrameData = CapturedFrameData(arFrame: frame, filename: "frame\(framesCapturedCount).jpeg")
+                let capturedFrameData = CapturedFrameData(arFrame: frame, width: width, height: height, filename: "frame\(framesCapturedCount).jpeg")
                 capturedDataArr.append(capturedFrameData)
             }
             

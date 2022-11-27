@@ -1,0 +1,651 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6417D411290DD126004A6DF9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417D410290DD126004A6DF9 /* AppDelegate.swift */; };
+		6417D413290DD126004A6DF9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417D412290DD126004A6DF9 /* SceneDelegate.swift */; };
+		6417D415290DD126004A6DF9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417D414290DD126004A6DF9 /* ViewController.swift */; };
+		6417D418290DD126004A6DF9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6417D416290DD126004A6DF9 /* Main.storyboard */; };
+		6417D41A290DD127004A6DF9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6417D419290DD127004A6DF9 /* Assets.xcassets */; };
+		6417D41D290DD127004A6DF9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6417D41B290DD127004A6DF9 /* LaunchScreen.storyboard */; };
+		6417D428290DD127004A6DF9 /* NeRFCamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417D427290DD127004A6DF9 /* NeRFCamTests.swift */; };
+		6417D432290DD127004A6DF9 /* NeRFCamUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417D431290DD127004A6DF9 /* NeRFCamUITests.swift */; };
+		6417D434290DD127004A6DF9 /* NeRFCamUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417D433290DD127004A6DF9 /* NeRFCamUITestsLaunchTests.swift */; };
+		6417D480290EC7DB004A6DF9 /*  CapturedImageSampler.swift .swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417D47F290EC7DB004A6DF9 /*  CapturedImageSampler.swift .swift */; };
+		6417D4842912828C004A6DF9 /* SendDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417D4832912828C004A6DF9 /* SendDataViewController.swift */; };
+		6417D48629140867004A6DF9 /* UImage+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417D48529140867004A6DF9 /* UImage+Utilities.swift */; };
+		6417D48929141722004A6DF9 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417D48829141722004A6DF9 /* Matrix.swift */; };
+		6417D48B29141775004A6DF9 /* SIMD+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417D48A29141775004A6DF9 /* SIMD+Extensions.swift */; };
+		6417D48D29141B9F004A6DF9 /* CapturedFrameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417D48C29141B9F004A6DF9 /* CapturedFrameData.swift */; };
+		642657122917D9D700E6F23D /* NeRFData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 642657112917D9D700E6F23D /* NeRFData.swift */; };
+		64265716292A7DBA00E6F23D /* ARKit+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64265715292A7DBA00E6F23D /* ARKit+Utilities.swift */; };
+		64265718292A7E0200E6F23D /* CoreImage+Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64265717292A7E0200E6F23D /* CoreImage+Utility.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6417D424290DD127004A6DF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6417D405290DD126004A6DF9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6417D40C290DD126004A6DF9;
+			remoteInfo = NeRFCam;
+		};
+		6417D42E290DD127004A6DF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6417D405290DD126004A6DF9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6417D40C290DD126004A6DF9;
+			remoteInfo = NeRFCam;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		6417D40D290DD126004A6DF9 /* NeRFCam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeRFCam.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6417D410290DD126004A6DF9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		6417D412290DD126004A6DF9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		6417D414290DD126004A6DF9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		6417D417290DD126004A6DF9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		6417D419290DD127004A6DF9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6417D41C290DD127004A6DF9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		6417D41E290DD127004A6DF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6417D423290DD127004A6DF9 /* NeRFCamTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NeRFCamTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6417D427290DD127004A6DF9 /* NeRFCamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeRFCamTests.swift; sourceTree = "<group>"; };
+		6417D42D290DD127004A6DF9 /* NeRFCamUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NeRFCamUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6417D431290DD127004A6DF9 /* NeRFCamUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeRFCamUITests.swift; sourceTree = "<group>"; };
+		6417D433290DD127004A6DF9 /* NeRFCamUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeRFCamUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		6417D47F290EC7DB004A6DF9 /*  CapturedImageSampler.swift .swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " CapturedImageSampler.swift .swift"; sourceTree = "<group>"; };
+		6417D4832912828C004A6DF9 /* SendDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendDataViewController.swift; sourceTree = "<group>"; };
+		6417D48529140867004A6DF9 /* UImage+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UImage+Utilities.swift"; sourceTree = "<group>"; };
+		6417D48829141722004A6DF9 /* Matrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
+		6417D48A29141775004A6DF9 /* SIMD+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SIMD+Extensions.swift"; sourceTree = "<group>"; };
+		6417D48C29141B9F004A6DF9 /* CapturedFrameData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturedFrameData.swift; sourceTree = "<group>"; };
+		642657112917D9D700E6F23D /* NeRFData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeRFData.swift; sourceTree = "<group>"; };
+		64265715292A7DBA00E6F23D /* ARKit+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ARKit+Utilities.swift"; sourceTree = "<group>"; };
+		64265717292A7E0200E6F23D /* CoreImage+Utility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreImage+Utility.swift"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6417D40A290DD126004A6DF9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6417D420290DD127004A6DF9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6417D42A290DD127004A6DF9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6417D404290DD126004A6DF9 = {
+			isa = PBXGroup;
+			children = (
+				6417D40F290DD126004A6DF9 /* NeRFCam */,
+				6417D426290DD127004A6DF9 /* NeRFCamTests */,
+				6417D430290DD127004A6DF9 /* NeRFCamUITests */,
+				6417D40E290DD126004A6DF9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6417D40E290DD126004A6DF9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6417D40D290DD126004A6DF9 /* NeRFCam.app */,
+				6417D423290DD127004A6DF9 /* NeRFCamTests.xctest */,
+				6417D42D290DD127004A6DF9 /* NeRFCamUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6417D40F290DD126004A6DF9 /* NeRFCam */ = {
+			isa = PBXGroup;
+			children = (
+				6417D48729141704004A6DF9 /* Utilities */,
+				6417D410290DD126004A6DF9 /* AppDelegate.swift */,
+				6417D412290DD126004A6DF9 /* SceneDelegate.swift */,
+				6417D47F290EC7DB004A6DF9 /*  CapturedImageSampler.swift .swift */,
+				6417D48C29141B9F004A6DF9 /* CapturedFrameData.swift */,
+				6417D414290DD126004A6DF9 /* ViewController.swift */,
+				642657112917D9D700E6F23D /* NeRFData.swift */,
+				6417D416290DD126004A6DF9 /* Main.storyboard */,
+				6417D4832912828C004A6DF9 /* SendDataViewController.swift */,
+				6417D419290DD127004A6DF9 /* Assets.xcassets */,
+				6417D41B290DD127004A6DF9 /* LaunchScreen.storyboard */,
+				6417D41E290DD127004A6DF9 /* Info.plist */,
+			);
+			path = NeRFCam;
+			sourceTree = "<group>";
+		};
+		6417D426290DD127004A6DF9 /* NeRFCamTests */ = {
+			isa = PBXGroup;
+			children = (
+				6417D427290DD127004A6DF9 /* NeRFCamTests.swift */,
+			);
+			path = NeRFCamTests;
+			sourceTree = "<group>";
+		};
+		6417D430290DD127004A6DF9 /* NeRFCamUITests */ = {
+			isa = PBXGroup;
+			children = (
+				6417D431290DD127004A6DF9 /* NeRFCamUITests.swift */,
+				6417D433290DD127004A6DF9 /* NeRFCamUITestsLaunchTests.swift */,
+			);
+			path = NeRFCamUITests;
+			sourceTree = "<group>";
+		};
+		6417D48729141704004A6DF9 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				6417D48529140867004A6DF9 /* UImage+Utilities.swift */,
+				6417D48829141722004A6DF9 /* Matrix.swift */,
+				6417D48A29141775004A6DF9 /* SIMD+Extensions.swift */,
+				64265715292A7DBA00E6F23D /* ARKit+Utilities.swift */,
+				64265717292A7E0200E6F23D /* CoreImage+Utility.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6417D40C290DD126004A6DF9 /* NeRFCam */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6417D437290DD127004A6DF9 /* Build configuration list for PBXNativeTarget "NeRFCam" */;
+			buildPhases = (
+				6417D409290DD126004A6DF9 /* Sources */,
+				6417D40A290DD126004A6DF9 /* Frameworks */,
+				6417D40B290DD126004A6DF9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NeRFCam;
+			productName = NeRFCam;
+			productReference = 6417D40D290DD126004A6DF9 /* NeRFCam.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6417D422290DD127004A6DF9 /* NeRFCamTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6417D43A290DD127004A6DF9 /* Build configuration list for PBXNativeTarget "NeRFCamTests" */;
+			buildPhases = (
+				6417D41F290DD127004A6DF9 /* Sources */,
+				6417D420290DD127004A6DF9 /* Frameworks */,
+				6417D421290DD127004A6DF9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6417D425290DD127004A6DF9 /* PBXTargetDependency */,
+			);
+			name = NeRFCamTests;
+			productName = NeRFCamTests;
+			productReference = 6417D423290DD127004A6DF9 /* NeRFCamTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		6417D42C290DD127004A6DF9 /* NeRFCamUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6417D43D290DD127004A6DF9 /* Build configuration list for PBXNativeTarget "NeRFCamUITests" */;
+			buildPhases = (
+				6417D429290DD127004A6DF9 /* Sources */,
+				6417D42A290DD127004A6DF9 /* Frameworks */,
+				6417D42B290DD127004A6DF9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6417D42F290DD127004A6DF9 /* PBXTargetDependency */,
+			);
+			name = NeRFCamUITests;
+			productName = NeRFCamUITests;
+			productReference = 6417D42D290DD127004A6DF9 /* NeRFCamUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6417D405290DD126004A6DF9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1400;
+				LastUpgradeCheck = 1400;
+				TargetAttributes = {
+					6417D40C290DD126004A6DF9 = {
+						CreatedOnToolsVersion = 14.0.1;
+					};
+					6417D422290DD127004A6DF9 = {
+						CreatedOnToolsVersion = 14.0.1;
+						TestTargetID = 6417D40C290DD126004A6DF9;
+					};
+					6417D42C290DD127004A6DF9 = {
+						CreatedOnToolsVersion = 14.0.1;
+						TestTargetID = 6417D40C290DD126004A6DF9;
+					};
+				};
+			};
+			buildConfigurationList = 6417D408290DD126004A6DF9 /* Build configuration list for PBXProject "NeRFCam" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 6417D404290DD126004A6DF9;
+			productRefGroup = 6417D40E290DD126004A6DF9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6417D40C290DD126004A6DF9 /* NeRFCam */,
+				6417D422290DD127004A6DF9 /* NeRFCamTests */,
+				6417D42C290DD127004A6DF9 /* NeRFCamUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6417D40B290DD126004A6DF9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6417D41D290DD127004A6DF9 /* LaunchScreen.storyboard in Resources */,
+				6417D41A290DD127004A6DF9 /* Assets.xcassets in Resources */,
+				6417D418290DD126004A6DF9 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6417D421290DD127004A6DF9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6417D42B290DD127004A6DF9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6417D409290DD126004A6DF9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6417D48B29141775004A6DF9 /* SIMD+Extensions.swift in Sources */,
+				6417D48929141722004A6DF9 /* Matrix.swift in Sources */,
+				6417D415290DD126004A6DF9 /* ViewController.swift in Sources */,
+				6417D411290DD126004A6DF9 /* AppDelegate.swift in Sources */,
+				6417D48D29141B9F004A6DF9 /* CapturedFrameData.swift in Sources */,
+				6417D48629140867004A6DF9 /* UImage+Utilities.swift in Sources */,
+				6417D413290DD126004A6DF9 /* SceneDelegate.swift in Sources */,
+				64265716292A7DBA00E6F23D /* ARKit+Utilities.swift in Sources */,
+				6417D480290EC7DB004A6DF9 /*  CapturedImageSampler.swift .swift in Sources */,
+				64265718292A7E0200E6F23D /* CoreImage+Utility.swift in Sources */,
+				642657122917D9D700E6F23D /* NeRFData.swift in Sources */,
+				6417D4842912828C004A6DF9 /* SendDataViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6417D41F290DD127004A6DF9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6417D428290DD127004A6DF9 /* NeRFCamTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6417D429290DD127004A6DF9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6417D432290DD127004A6DF9 /* NeRFCamUITests.swift in Sources */,
+				6417D434290DD127004A6DF9 /* NeRFCamUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6417D425290DD127004A6DF9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6417D40C290DD126004A6DF9 /* NeRFCam */;
+			targetProxy = 6417D424290DD127004A6DF9 /* PBXContainerItemProxy */;
+		};
+		6417D42F290DD127004A6DF9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6417D40C290DD126004A6DF9 /* NeRFCam */;
+			targetProxy = 6417D42E290DD127004A6DF9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		6417D416290DD126004A6DF9 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6417D417290DD126004A6DF9 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		6417D41B290DD127004A6DF9 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6417D41C290DD127004A6DF9 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		6417D435290DD127004A6DF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		6417D436290DD127004A6DF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		6417D438290DD127004A6DF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4KQ4MAZW6F;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NeRFCam/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.NeRFCam;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6417D439290DD127004A6DF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4KQ4MAZW6F;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NeRFCam/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.NeRFCam;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		6417D43B290DD127004A6DF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4KQ4MAZW6F;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.NeRFCamTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NeRFCam.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/NeRFCam";
+			};
+			name = Debug;
+		};
+		6417D43C290DD127004A6DF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4KQ4MAZW6F;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.NeRFCamTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NeRFCam.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/NeRFCam";
+			};
+			name = Release;
+		};
+		6417D43E290DD127004A6DF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4KQ4MAZW6F;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.NeRFCamUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = NeRFCam;
+			};
+			name = Debug;
+		};
+		6417D43F290DD127004A6DF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4KQ4MAZW6F;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.NeRFCamUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = NeRFCam;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6417D408290DD126004A6DF9 /* Build configuration list for PBXProject "NeRFCam" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6417D435290DD127004A6DF9 /* Debug */,
+				6417D436290DD127004A6DF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6417D437290DD127004A6DF9 /* Build configuration list for PBXNativeTarget "NeRFCam" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6417D438290DD127004A6DF9 /* Debug */,
+				6417D439290DD127004A6DF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6417D43A290DD127004A6DF9 /* Build configuration list for PBXNativeTarget "NeRFCamTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6417D43B290DD127004A6DF9 /* Debug */,
+				6417D43C290DD127004A6DF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6417D43D290DD127004A6DF9 /* Build configuration list for PBXNativeTarget "NeRFCamUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6417D43E290DD127004A6DF9 /* Debug */,
+				6417D43F290DD127004A6DF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6417D405290DD126004A6DF9 /* Project object */;
+}
