@@ -16,6 +16,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBOutlet weak var infoText: UILabel!
     @IBOutlet weak var arView: ARSCNView!
     @IBOutlet weak var parentView: UIView!
+    @IBOutlet weak var gestureRecognizer: UITapGestureRecognizer!
     
     var isPressed: Bool = false
     var framesCapturedCount: Int = 0
@@ -26,6 +27,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var projectionMatrixArr: Array<simd_float4x4> = []
     var intrinsicMatrixArr: Array<simd_float3x3> = []
     var capturedDataArr: Array<CapturedFrameData> = []
+    var rawFeaturePointsArr: Array<FeaturePointsData> = []
     // hack to get the last intrinsics, just as POC to try out NerfStudio
     var lastFrame: ARFrame!
     //<ARFrame: 0x100b63bb0 timestamp=123957.421347 capturedImage=0x282e34d10 camera=0x2825b0100 lightEstimate=0x2819a2260 | 1 anchor, 20 features>
@@ -58,8 +60,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         // Start the view's AR session with a configuration that uses the rear camera,
         // device position and orientation tracking, and plane detection.
         let configuration = ARWorldTrackingConfiguration()
+        // TODO: Is this correct? It didn't change anything
+        configuration.worldAlignment = ARConfiguration.WorldAlignment.camera
+        
         configuration.planeDetection = [.horizontal, .vertical]
-        arView.debugOptions = ARSCNDebugOptions.showFeaturePoints
+
+        arView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
         arView.session.run(configuration)
 
         // Set a delegate to track the number of plane anchors for providing UI feedback.
@@ -78,6 +84,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         isPressed = true
     }
     
+    @IBAction func myActionMethod(_ sender: UIGestureRecognizer) {
+        print("Sender: \(sender)")
+        let point: CGPoint = sender.location(in: view)
+        print(point)
+    }
+    
    
     @IBAction func sendNext(_ sender: UIButton) {
         let nerfData = NeRFData(capturedFrameData: capturedDataArr, arFrame: lastFrame)
@@ -89,6 +101,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         } catch let error {
             print(error.localizedDescription)
         }
+        
+        // encode raw feature points data
+        let rawFeaturePointsData = try? JSONEncoder().encode(rawFeaturePointsArr)
+        let rawFeaturePointsDataFilename = dataPath.appendingPathComponent("rawFeaturePointsData.json")
+        print(rawFeaturePointsDataFilename)
+        do {
+            try rawFeaturePointsData?.write(to: rawFeaturePointsDataFilename)
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        
        
         
         
@@ -142,9 +165,19 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             
             if let data = image?.jpegData(compressionQuality: 1.0 ) {
                 let filename = dataPath.appendingPathComponent("frame\(framesCapturedCount).jpeg")
+                
+                // save frame
                 try? data.write(to: filename)
                 let capturedFrameData = CapturedFrameData(arFrame: frame, filename: "frame\(framesCapturedCount).jpeg")
                 capturedDataArr.append(capturedFrameData)
+                
+                // save raw feature points
+                let rawFeaturePoints = frame.rawFeaturePoints?.points
+                if rawFeaturePoints != nil {
+                    let featurePointData = FeaturePointsData(arView: arView, arCamera: frame.camera, rawFeaturePoints: rawFeaturePoints ?? [], filename: "frame\(framesCapturedCount).jpeg")
+                    rawFeaturePointsArr.append(featurePointData)
+                }
+                
             }
             
             lastFrame = frame
