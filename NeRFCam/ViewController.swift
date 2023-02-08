@@ -28,6 +28,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var intrinsicMatrixArr: Array<simd_float3x3> = []
     var capturedDataArr: Array<CapturedFrameData> = []
     var rawFeaturePointsArr: Array<FeaturePointsData> = []
+    
+//    var rawFeaturePointsCollection: [vector_float3] = []
+//    var frameInformationArr: Array<FrameInformation> = []
+    
     // hack to get the last intrinsics, just as POC to try out NerfStudio
     var lastFrame: ARFrame!
     //<ARFrame: 0x100b63bb0 timestamp=123957.421347 capturedImage=0x282e34d10 camera=0x2825b0100 lightEstimate=0x2819a2260 | 1 anchor, 20 features>
@@ -102,7 +106,20 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             print(error.localizedDescription)
         }
         
-        // encode raw feature points data
+        // process all rawFeaturePoints for all cameras
+//        let final_information: Array<FramePoints>
+//        final_information = processRawFeaturePoints(frameInformationArr: frameInformationArr, rawFeaturePointsCollection: rawFeaturePointsCollection)
+//        // encode the info in a json
+//        let final_information_json_encoded = try? JSONEncoder().encode(final_information)
+//        let final_information_data_filename = dataPath.appendingPathComponent("rawFeaturePointsData.json")
+//        print(final_information_data_filename)
+//        do {
+//            try final_information_json_encoded?.write(to: final_information_data_filename)
+//        } catch let error {
+//            print(error.localizedDescription)
+//        }
+        
+        //encode raw feature points data
         let rawFeaturePointsData = try? JSONEncoder().encode(rawFeaturePointsArr)
         let rawFeaturePointsDataFilename = dataPath.appendingPathComponent("rawFeaturePointsData.json")
         print(rawFeaturePointsDataFilename)
@@ -129,6 +146,24 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         // Pause the view's AR session.
         arView.session.pause()
     }
+    
+//    func processRawFeaturePoints(frameInformationArr: Array<FrameInformation>, rawFeaturePointsCollection: [vector_float3]) -> Array<FramePoints> {
+//        /**
+//         Iterate through every camera, project the point cloud and only save the points that interesect with that camera plane
+//         */
+//        var finalInformationArr: Array<FramePoints> = []
+//        print("Total number of rawFeaturePoints is: \(rawFeaturePointsCollection.count)")
+//        for frameInformation in frameInformationArr {
+//            print("View Matrix: \(frameInformation.view_matrix)")
+//            let frame_slam_points = frameInformation.projectRawFeaturePointsToCamera(rawFeaturePoints: rawFeaturePointsCollection)
+//            let final_information = FramePoints(slam_points: frame_slam_points, file_path: frameInformation.file_path)
+//            print("Number of rawFeaturePoints for frame: \(frameInformation.file_path) is: \(final_information.slam_points.count)")
+//            finalInformationArr.append(final_information)
+//        }
+//        return finalInformationArr
+//
+//
+//    }
     
     func getDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
@@ -174,6 +209,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 // save raw feature points
                 let rawFeaturePoints = frame.rawFeaturePoints?.points
                 if rawFeaturePoints != nil {
+                    // collect all rawFeaturePoints for each frame in one array
+//                    print("Number of rawFeaturePoints for frame \(framesCapturedCount) is: \(String(describing: rawFeaturePoints?.count))")
+//                    rawFeaturePointsCollection.append(contentsOf: rawFeaturePoints ?? [])
+//                    let frame_information = FrameInformation(arView: arView, arCamera: frame.camera, filePath: "frame\(framesCapturedCount).jpeg")
+//
+//                    frameInformationArr.append(frame_information)
+                    
                     let featurePointData = FeaturePointsData(arView: arView, arCamera: frame.camera, rawFeaturePoints: rawFeaturePoints ?? [], filename: "frame\(framesCapturedCount).jpeg")
                     rawFeaturePointsArr.append(featurePointData)
                 }
