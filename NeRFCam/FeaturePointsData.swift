@@ -16,6 +16,8 @@ struct FeaturePointsData: Codable {
     init(arView: ARSCNView, arCamera: ARCamera, rawFeaturePoints: [vector_float3], filename: String) {
         file_path = filename
         for point in rawFeaturePoints {
+            let interfaceOrientation = arView.window?.windowScene?.interfaceOrientation
+            let point_to_camera_distances = getPointToCameraDistances(arCamera: arCamera, point: point, orientation: interfaceOrientation ?? .landscapeLeft)
             let point_to_camera_distances = getPointToCameraDistances(arCamera: arCamera, point: point)
             // stay only with z, the distance from the point to the camera (negative) in meters
             // convert to a positive value and to milimiters
@@ -25,7 +27,7 @@ struct FeaturePointsData: Codable {
             // normalize the viewport coordinates for easier plotting in Python
             let viewport_coords_normalized = normalizeCoordinates(point: viewport_coords)
             // we need to filter negative values for x and y as it indicates that a point is projected outside of the view
-            if (viewport_coords_normalized.x.sign == .plus && viewport_coords_normalized.y.sign == .plus) {
+            if (viewport_coords_normalized.x.sign == .plus && viewport_coords_normalized.y.sign == .plus) && (viewport_coords_normalized.x.isLess(than: 1.0) && viewport_coords_normalized.y.isLess(than: 1.0)) {
                 let feature_point = FeaturePoint(x: viewport_coords_normalized.x, y: viewport_coords_normalized.y, z: z)
                 //print("FeaturePoint: \(feature_point)")
                 featurePoints.append(feature_point)
@@ -43,14 +45,13 @@ struct FeaturePointsData: Codable {
     func normalizeCoordinates(point: SCNVector3) -> SCNVector3 {
         let x_pixel = CGFloat(point.x) / UIScreen.main.bounds.width
         let y_pixel = CGFloat(point.y) / UIScreen.main.bounds.height
-        //return SCNVector3(x: Float(x_pixel), y: Float(y_pixel), z: 0.0)
-        return point
+        return SCNVector3(x: Float(x_pixel), y: Float(y_pixel), z: 0.0)
     }
     
     
-    func getPointToCameraDistances(arCamera: ARCamera, point: SIMD3<Float>) -> SIMD4<Float> {
+    func getPointToCameraDistances(arCamera: ARCamera, point: SIMD3<Float>, orientation: UIInterfaceOrientation) -> SIMD4<Float> {
         // returns the distances from the camera (because we are setting the origin there) to the point in meters
-        let viewMatrix = arCamera.viewMatrix(for: .landscapeLeft)
+        let viewMatrix = arCamera.viewMatrix(for: orientation)
         // conversion to camera origin, units are in meters, negative means that point is below and to the left of the camera
         let points_from_camera = viewMatrix * SIMD4<Float>(point, 1)
         return points_from_camera

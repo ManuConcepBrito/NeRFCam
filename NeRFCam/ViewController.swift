@@ -85,8 +85,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     @IBAction func myActionMethod(_ sender: UIGestureRecognizer) {
-        print("Sender: \(sender)")
-        let point: CGPoint = sender.location(in: view)
+        let point: CGPoint = sender.location(in: arView)
         print(point)
     }
     
@@ -111,10 +110,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         } catch let error {
             print(error.localizedDescription)
         }
-        
-       
-        
-        
         
         
         // navigate to next screen
