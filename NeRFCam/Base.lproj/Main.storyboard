@@ -24,11 +24,11 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Z6-nf-7jF">
-                                <rect key="frame" x="27" y="116" width="336" height="585"/>
+                                <rect key="frame" x="7" y="0.0" width="383" height="834"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NzC-bo-jhI">
-                                        <rect key="frame" x="0.0" y="0.0" width="336" height="585"/>
+                                        <rect key="frame" x="0.0" y="99" width="383" height="735"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </arscnView>
                                 </subviews>

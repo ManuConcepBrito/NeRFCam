@@ -18,27 +18,35 @@ struct FeaturePointsData: Codable {
         for point in rawFeaturePoints {
             let interfaceOrientation = arView.window?.windowScene?.interfaceOrientation
             let point_to_camera_distances = getPointToCameraDistances(arCamera: arCamera, point: point, orientation: interfaceOrientation ?? .landscapeLeft)
-            let point_to_camera_distances = getPointToCameraDistances(arCamera: arCamera, point: point)
             // stay only with z, the distance from the point to the camera (negative) in meters
             // convert to a positive value and to milimiters
             let z = point_to_camera_distances.z * -1 * 1000
             // get the viewport coordinates for x and y, viewport for iPhone 13 is, for example: 390x 844
-            let viewport_coords = getViewportCoordinates(arView: arView, point: point)
+            let viewport_coords = getViewportCoordinates(arView: arView, point: point, arCamera: arCamera, orientation: interfaceOrientation ?? .landscapeLeft)
             // normalize the viewport coordinates for easier plotting in Python
             let viewport_coords_normalized = normalizeCoordinates(point: viewport_coords)
             // we need to filter negative values for x and y as it indicates that a point is projected outside of the view
             if (viewport_coords_normalized.x.sign == .plus && viewport_coords_normalized.y.sign == .plus) && (viewport_coords_normalized.x.isLess(than: 1.0) && viewport_coords_normalized.y.isLess(than: 1.0)) {
                 let feature_point = FeaturePoint(x: viewport_coords_normalized.x, y: viewport_coords_normalized.y, z: z)
-                //print("FeaturePoint: \(feature_point)")
+                print("FeaturePoint: \(feature_point)")
                 featurePoints.append(feature_point)
             }
         }
         print("Number of featurePoints: \(featurePoints.count)")
     }
     
-    func getViewportCoordinates(arView: ARSCNView, point: SIMD3<Float>) -> SCNVector3 {
+    func getViewportCoordinates(arView: ARSCNView, point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation) -> SCNVector3 {
         let scn_point = SCNVector3(point)
         let projected_point = arView.projectPoint(scn_point)
+        // debug
+        
+        //let one_var = arCamera.viewMatrix(for: orientation) * SIMD4<Float>(point, 1)
+        //let another_var = SIMD3<Float>(one_var.x, one_var.y, one_var.z)
+//        let projected_point_2 = arCamera.intrinsics * another_var
+        //let projected_point_2 = arCamera.intrinsics * point
+        let projectionMatrix = arCamera.projectionMatrix(for: orientation, viewportSize: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height), zNear: 0, zFar: 1000)
+        let projected_point_2 = projectionMatrix * SIMD4<Float>(point, 1)
+        print("Projected point: \(projected_point) and manually projected \(projected_point_2)")
         return projected_point
     }
     
