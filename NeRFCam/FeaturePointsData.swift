@@ -28,7 +28,6 @@ struct FeaturePointsData: Codable {
             // we need to filter negative values for x and y as it indicates that a point is projected outside of the view
             if (viewport_coords_normalized.x.sign == .plus && viewport_coords_normalized.y.sign == .plus) && (viewport_coords_normalized.x.isLess(than: 1.0) && viewport_coords_normalized.y.isLess(than: 1.0)) {
                 let feature_point = FeaturePoint(x: viewport_coords_normalized.x, y: viewport_coords_normalized.y, z: z)
-                print("FeaturePoint: \(feature_point)")
                 featurePoints.append(feature_point)
             }
         }

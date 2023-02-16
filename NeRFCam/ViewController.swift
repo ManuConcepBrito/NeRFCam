@@ -16,6 +16,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBOutlet weak var infoText: UILabel!
     @IBOutlet weak var arView: ARSCNView!
     @IBOutlet weak var parentView: UIView!
+    
+    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var gestureRecognizer: UITapGestureRecognizer!
     
     var isPressed: Bool = false
@@ -33,6 +35,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     //<ARFrame: 0x100b63bb0 timestamp=123957.421347 capturedImage=0x282e34d10 camera=0x2825b0100 lightEstimate=0x2819a2260 | 1 anchor, 20 features>
     
     var dataPath: URL!
+    
+    var compositedImage: CIImage!
+    var debugImage: CIImage!
 
 
     override func viewDidLoad() {
@@ -40,8 +45,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
     }
     
-    /// - Tag: StartARSession
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // clean state if the user goes back
         framesCapturedCount = 0
@@ -60,8 +64,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         // Start the view's AR session with a configuration that uses the rear camera,
         // device position and orientation tracking, and plane detection.
         let configuration = ARWorldTrackingConfiguration()
-        // TODO: Is this correct? It didn't change anything
-        configuration.worldAlignment = ARConfiguration.WorldAlignment.camera
+        configuration.worldAlignment = .camera
         
         configuration.planeDetection = [.horizontal, .vertical]
 
@@ -77,7 +80,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
         // Show debug UI to view performance metrics (e.g. frames per second).
         arView.showsStatistics = true
-        
     }
     
     @IBAction func captureFrame(_ sender: Any) {
@@ -148,35 +150,52 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
     }
     
-  
+    func rotatePoint(x: Float, y: Float, angle: Float) -> SIMD2<Float>{
+        let s = sinf(angle)
+        let c = cosf(angle)
+        print("Cosine and sine: \(c) \(s)")
+        
+        return SIMD2(c * x - s * y, s * x + c * y)
+    }
+    func translatePoint(x: Float, y: Float) -> SIMD2<Float> {
+        
+        return SIMD2(1920 - x, 1440 - y)
+    }
 
     // MARK: - ARSessionDelegate
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        
+        
         if isPressed {
             isPressed = false
             infoText.text = "Frames Captured: \(framesCapturedCount + 1)"
-            // save image data
-            let image = UIImage(pixelBuffer: frame.capturedImage)
+            let rawFeaturePoints2 = frame.rawFeaturePoints?.points
+            compositedImage = CIImage(cvPixelBuffer: frame.capturedImage)
+
             
-            if let data = image?.jpegData(compressionQuality: 1.0 ) {
-                let filename = dataPath.appendingPathComponent("frame\(framesCapturedCount).jpeg")
+            for point in rawFeaturePoints2 ?? [] {
+                let homogenousImageSpacePosition = frame.camera.intrinsics * SIMD3<Float>(point)
                 
-                // save frame
-                try? data.write(to: filename)
-                let capturedFrameData = CapturedFrameData(arFrame: frame, filename: "frame\(framesCapturedCount).jpeg")
-                capturedDataArr.append(capturedFrameData)
+                // Divides all components of the homogenous coordinate by the last component to get the euclidian coordinate.
+                let euclidianImageSpacePosition = homogenousImageSpacePosition / homogenousImageSpacePosition.z
+                                
+                let translatedPoint = translatePoint(x: euclidianImageSpacePosition.x, y: euclidianImageSpacePosition.y)
                 
-                // save raw feature points
-                let rawFeaturePoints = frame.rawFeaturePoints?.points
-                if rawFeaturePoints != nil {
-                    let featurePointData = FeaturePointsData(arView: arView, arCamera: frame.camera, rawFeaturePoints: rawFeaturePoints ?? [], filename: "frame\(framesCapturedCount).jpeg")
-                    rawFeaturePointsArr.append(featurePointData)
+                
+                if (0...1920).contains(translatedPoint.x) && (0...1440).contains(translatedPoint.y) {
+                    print("translatedPoint Point: \(translatedPoint)")
+                    
+                    
+                    debugImage = CIImage(color: .red).cropped(to: .init(origin: CGPoint(x: CGFloat(translatedPoint.x), y: CGFloat(translatedPoint.y)),
+                                                                        size: .init(width: 20, height: 20)))
+
+                    compositedImage = debugImage.composited(over: compositedImage)
                 }
                 
             }
-            
-            lastFrame = frame
-            framesCapturedCount += 1
+            DispatchQueue.main.async { [unowned self] in
+                imageView.image = UIImage(ciImage: compositedImage)
+            }
         }
         
     }
