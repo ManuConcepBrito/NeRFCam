@@ -171,7 +171,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             infoText.text = "Frames Captured: \(framesCapturedCount + 1)"
             let rawFeaturePoints2 = frame.rawFeaturePoints?.points
             compositedImage = CIImage(cvPixelBuffer: frame.capturedImage)
-
+            let _orientationTransform = compositedImage.orientationTransform(for: .right)
+            compositedImage = compositedImage.transformed(by: _orientationTransform)
             
             for point in rawFeaturePoints2 ?? [] {
                 let homogenousImageSpacePosition = frame.camera.intrinsics * SIMD3<Float>(point)
@@ -181,12 +182,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                 
                 let translatedPoint = translatePoint(x: euclidianImageSpacePosition.x, y: euclidianImageSpacePosition.y)
                 
+                // Used to match the rotate the featurePoints in the same way the image
+                // See https://developer.apple.com/documentation/corefoundation/cgaffinetransform
+                let x = Float(_orientationTransform.a) * translatedPoint.x + Float(_orientationTransform.c) * translatedPoint.y + Float(_orientationTransform.tx)
+                let y = Float(_orientationTransform.b) * translatedPoint.x + Float(_orientationTransform.d) * translatedPoint.y + Float(_orientationTransform.ty)
                 
-                if (0...1920).contains(translatedPoint.x) && (0...1440).contains(translatedPoint.y) {
-                    print("translatedPoint Point: \(translatedPoint)")
+                // The if condition is a bit confusing, but it is correct.
+                // The ImageView is 1920x1440 however, we are plotting on top of it an image that is 1440x1920
+                // if you check (0...1920).contains(x) && (0...1440).contains(y) you will end up with some feature points outside of the image
+                if (0...1920).contains(y) && (0...1440).contains(x) {
                     
-                    
-                    debugImage = CIImage(color: .red).cropped(to: .init(origin: CGPoint(x: CGFloat(translatedPoint.x), y: CGFloat(translatedPoint.y)),
+                    debugImage = CIImage(color: .red).cropped(to: .init(origin: CGPoint(x: CGFloat(x), y: CGFloat(y)),
                                                                         size: .init(width: 20, height: 20)))
 
                     compositedImage = debugImage.composited(over: compositedImage)
