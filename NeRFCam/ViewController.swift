@@ -157,7 +157,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
         return SIMD2(c * x - s * y, s * x + c * y)
     }
-    func translatePoint(x: Float, y: Float) -> SIMD2<Float> {
+    func translatePoint(x: Float, y: Float, width: Float, height: Float) -> SIMD2<Float> {
         
         return SIMD2(1920 - x, 1440 - y)
     }
@@ -180,7 +180,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 // Divides all components of the homogenous coordinate by the last component to get the euclidian coordinate.
                 let euclidianImageSpacePosition = homogenousImageSpacePosition / homogenousImageSpacePosition.z
                                 
-                let translatedPoint = translatePoint(x: euclidianImageSpacePosition.x, y: euclidianImageSpacePosition.y)
+                let translatedPoint = translatePoint(x: euclidianImageSpacePosition.x, y: euclidianImageSpacePosition.y, width:Float(frame.camera.imageResolution.width), height:Float(frame.camera.imageResolution.height))
                 
                 // Used to match the rotate the featurePoints in the same way the image
                 // See https://developer.apple.com/documentation/corefoundation/cgaffinetransform
@@ -190,7 +190,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 // The if condition is a bit confusing, but it is correct.
                 // The ImageView is 1920x1440 however, we are plotting on top of it an image that is 1440x1920
                 // if you check (0...1920).contains(x) && (0...1440).contains(y) you will end up with some feature points outside of the image
-                if (0...1920).contains(y) && (0...1440).contains(x) {
+                if (0...Float(frame.camera.imageResolution.width)).contains(y) && (0...Float(frame.camera.imageResolution.height)).contains(x) {
                     
                     debugImage = CIImage(color: .red).cropped(to: .init(origin: CGPoint(x: CGFloat(x), y: CGFloat(y)),
                                                                         size: .init(width: 20, height: 20)))
