@@ -64,7 +64,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         // Start the view's AR session with a configuration that uses the rear camera,
         // device position and orientation tracking, and plane detection.
         let configuration = ARWorldTrackingConfiguration()
-        configuration.worldAlignment = .camera
         
         configuration.planeDetection = [.horizontal, .vertical]
 
@@ -151,15 +150,66 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     func rotatePoint(x: Float, y: Float, angle: Float) -> SIMD2<Float>{
+        /** Rotate Point counterclockwise around the center of the image.
+         See https://stackoverflow.com/questions/2259476/rotating-a-point-about-another-point-2d
+             Angle is in radians
+         */
+        
+        // image center as (0,0). Translate points to the middle.
+        let x_middle = x - 1920.0/2
+        let y_middle = y - 1440.0/2
+        
+        // rotate point
         let s = sinf(angle)
         let c = cosf(angle)
-        print("Cosine and sine: \(c) \(s)")
         
-        return SIMD2(c * x - s * y, s * x + c * y)
+        let x_middle_rot = c * x_middle - s * y_middle
+        let y_middle_rot = s * x_middle + c * y_middle
+        
+        // translate the point back to the image coordinate system
+        let x_rot = x_middle_rot + 1920.0/2
+        let y_rot = y_middle_rot + 1440.0/2
+        
+
+        return SIMD2(x_rot, y_rot)
     }
+
     func translatePoint(x: Float, y: Float, width: Float, height: Float) -> SIMD2<Float> {
         
-        return SIMD2(1920 - x, 1440 - y)
+        return SIMD2(width - x, height - y)
+    }
+    
+    func useCameraTransform(point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation) -> SIMD3<Float> {
+        let pointProjected = arCamera.transform * SIMD4<Float>(point, 1)
+        let homogenousImageSpacePosition = arCamera.intrinsics * pointProjected[SIMD3(0,1,2)]
+        return homogenousImageSpacePosition / homogenousImageSpacePosition.z
+    }
+    
+    func useViewMatrix(point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation) -> SIMD3<Float> {
+//        let viewMatrix = arCamera.viewMatrix(for: orientation)
+//        let projectedPoint = viewMatrix * SIMD4<Float>(point, 1)
+//        let projectedPointNormalized = (projectedPoint / projectedPoint.w)[SIMD3(0,1,2)]
+        
+        let projectedPoint = arCamera.transform.inverse * SIMD4<Float>(point, 1)
+        
+        print("Projected point: \(projectedPoint)")
+        
+        let projectedPointNormalized = (projectedPoint / projectedPoint.w)[SIMD3(0,1,2)]
+        
+        let homogenousImageSpacePosition = arCamera.intrinsics * projectedPointNormalized
+        
+        let euclidianImageSpacePosition = homogenousImageSpacePosition / homogenousImageSpacePosition.z
+        
+        return euclidianImageSpacePosition
+    }
+    
+    func useProjectionMatrix(point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation) -> SIMD3<Float> {
+        let projectedPoint = arCamera.projectionMatrix * SIMD4<Float>(point, 1)
+        let projectedPoint2 = projectedPoint / projectedPoint.w
+        let projectedPoint3 = projectedPoint2 / projectedPoint2.z
+        print("Projected point: \(projectedPoint3)")
+        
+        return projectedPoint3[SIMD3(0,1,2)]
     }
 
     // MARK: - ARSessionDelegate
@@ -173,20 +223,23 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             compositedImage = CIImage(cvPixelBuffer: frame.capturedImage)
             let _orientationTransform = compositedImage.orientationTransform(for: .right)
             compositedImage = compositedImage.transformed(by: _orientationTransform)
-            
+                        
             for point in rawFeaturePoints2 ?? [] {
-                let homogenousImageSpacePosition = frame.camera.intrinsics * SIMD3<Float>(point)
+
                 
-                // Divides all components of the homogenous coordinate by the last component to get the euclidian coordinate.
-                let euclidianImageSpacePosition = homogenousImageSpacePosition / homogenousImageSpacePosition.z
+                let interfaceOrientation = arView.window?.windowScene?.interfaceOrientation
+                
+                let euclidianImageSpacePosition = useViewMatrix(point: SIMD3<Float>(point), arCamera: frame.camera, orientation: interfaceOrientation ?? .landscapeLeft)
+                
+                let translatedPoint = translatePoint(x: euclidianImageSpacePosition.x, y: euclidianImageSpacePosition.y, width: Float(frame.camera.imageResolution.width), height: Float(frame.camera.imageResolution.height))
                                 
-                let translatedPoint = translatePoint(x: euclidianImageSpacePosition.x, y: euclidianImageSpacePosition.y, width:Float(frame.camera.imageResolution.width), height:Float(frame.camera.imageResolution.height))
-                
                 // Used to match the rotate the featurePoints in the same way the image
                 // See https://developer.apple.com/documentation/corefoundation/cgaffinetransform
+                
                 let x = Float(_orientationTransform.a) * translatedPoint.x + Float(_orientationTransform.c) * translatedPoint.y + Float(_orientationTransform.tx)
                 let y = Float(_orientationTransform.b) * translatedPoint.x + Float(_orientationTransform.d) * translatedPoint.y + Float(_orientationTransform.ty)
                 
+               
                 // The if condition is a bit confusing, but it is correct.
                 // The ImageView is 1920x1440 however, we are plotting on top of it an image that is 1440x1920
                 // if you check (0...1920).contains(x) && (0...1440).contains(y) you will end up with some feature points outside of the image

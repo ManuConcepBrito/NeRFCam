@@ -68,6 +68,7 @@ struct FeaturePointsData: Codable {
 
 struct FeaturePoint: Codable {
     /**
+
      x and y: n normalized coordinates (0.0-1). That means to plot them you need to multiply by the width and height of the frame
      z: Distance in milimiters from the feature point to the camera (positive)
      */
