@@ -6,8 +6,10 @@
 //
 
 import UIKit
+import CoreImage
 import SceneKit
 import ARKit
+import UniformTypeIdentifiers
 
 class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
 
@@ -32,7 +34,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var rawFeaturePointsArr: Array<FeaturePointsData> = []
     // hack to get the last intrinsics, just as POC to try out NerfStudio
     var lastFrame: ARFrame!
-    //<ARFrame: 0x100b63bb0 timestamp=123957.421347 capturedImage=0x282e34d10 camera=0x2825b0100 lightEstimate=0x2819a2260 | 1 anchor, 20 features>
+    var context: CIContext!
     
     var dataPath: URL!
     
@@ -42,6 +44,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        context = CIContext()
         
     }
     
@@ -149,68 +152,69 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
     }
     
-    func rotatePoint(x: Float, y: Float, angle: Float) -> SIMD2<Float>{
-        /** Rotate Point counterclockwise around the center of the image.
-         See https://stackoverflow.com/questions/2259476/rotating-a-point-about-another-point-2d
-             Angle is in radians
-         */
-        
-        // image center as (0,0). Translate points to the middle.
-        let x_middle = x - 1920.0/2
-        let y_middle = y - 1440.0/2
-        
-        // rotate point
-        let s = sinf(angle)
-        let c = cosf(angle)
-        
-        let x_middle_rot = c * x_middle - s * y_middle
-        let y_middle_rot = s * x_middle + c * y_middle
-        
-        // translate the point back to the image coordinate system
-        let x_rot = x_middle_rot + 1920.0/2
-        let y_rot = y_middle_rot + 1440.0/2
-        
-
-        return SIMD2(x_rot, y_rot)
-    }
 
     func translatePoint(x: Float, y: Float, width: Float, height: Float) -> SIMD2<Float> {
         
         return SIMD2(width - x, height - y)
     }
     
-    func useCameraTransform(point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation) -> SIMD3<Float> {
-        let pointProjected = arCamera.transform * SIMD4<Float>(point, 1)
-        let homogenousImageSpacePosition = arCamera.intrinsics * pointProjected[SIMD3(0,1,2)]
-        return homogenousImageSpacePosition / homogenousImageSpacePosition.z
-    }
-    
-    func useViewMatrix(point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation) -> SIMD3<Float> {
-//        let viewMatrix = arCamera.viewMatrix(for: orientation)
-//        let projectedPoint = viewMatrix * SIMD4<Float>(point, 1)
-//        let projectedPointNormalized = (projectedPoint / projectedPoint.w)[SIMD3(0,1,2)]
-        
+    func projectPoint(point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation) -> FeaturePoint {
+        // Project Point from 3D World to 3D Camera Space
         let projectedPoint = arCamera.transform.inverse * SIMD4<Float>(point, 1)
         
-        print("Projected point: \(projectedPoint)")
+        // distance from the camera in millimiters (positive away from the camera)
+        let depth = projectedPoint.z * -1 * 1000
         
+        // Convert to 3x1 Array, fourth component is 1
         let projectedPointNormalized = (projectedPoint / projectedPoint.w)[SIMD3(0,1,2)]
         
+        // Convert to 2D Image Space
         let homogenousImageSpacePosition = arCamera.intrinsics * projectedPointNormalized
         
         let euclidianImageSpacePosition = homogenousImageSpacePosition / homogenousImageSpacePosition.z
         
-        return euclidianImageSpacePosition
+        let featurePoint = FeaturePoint(x: euclidianImageSpacePosition.x, y: euclidianImageSpacePosition.y, z: depth)
+        
+        return featurePoint
     }
     
-    func useProjectionMatrix(point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation) -> SIMD3<Float> {
-        let projectedPoint = arCamera.projectionMatrix * SIMD4<Float>(point, 1)
-        let projectedPoint2 = projectedPoint / projectedPoint.w
-        let projectedPoint3 = projectedPoint2 / projectedPoint2.z
-        print("Projected point: \(projectedPoint3)")
+    func processPoint(point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation, orientationTransform: CGAffineTransform) -> FeaturePoint {
+        /**
+         Project one feature point in the correct coordinate system to be plotted on top of the captured images
+         */
+        let euclidianImageSpacePosition = projectPoint(point: SIMD3<Float>(point), arCamera: arCamera, orientation:  orientation)
+        let translatedPoint = translatePoint(x: euclidianImageSpacePosition.x, y: euclidianImageSpacePosition.y, width: Float(arCamera.imageResolution.width), height: Float(arCamera.imageResolution.height))
         
-        return projectedPoint3[SIMD3(0,1,2)]
+        // Used to match the rotate the featurePoints in the same way the image
+        // See https://developer.apple.com/documentation/corefoundation/cgaffinetransform
+        
+        let x = Float(orientationTransform.a) * translatedPoint.x + Float(orientationTransform.c) * translatedPoint.y + Float(orientationTransform.tx)
+        let y = Float(orientationTransform.b) * translatedPoint.x + Float(orientationTransform.d) * translatedPoint.y + Float(orientationTransform.ty)
+        
+        return FeaturePoint(x: x, y: y, z: euclidianImageSpacePosition.z)
     }
+    
+    func saveImage(capturedImage: CVPixelBuffer, orientationTransform: CGAffineTransform) -> Bool {
+        // rotate image to match the view of ARKit
+        let capturedFrame = CIImage(cvPixelBuffer: capturedImage)
+        let rotatedImage = capturedFrame.transformed(by: orientationTransform)
+        
+        // createa a CGImage
+        let cgImage = context.createCGImage(rotatedImage, from: rotatedImage.extent)!
+        let image = UIImage(cgImage: cgImage)
+        
+        if let data = image.jpegData(compressionQuality: 1.0) {
+            let filename = dataPath.appendingPathComponent("frame\(framesCapturedCount).jpeg")
+            do {
+                try data.write(to: filename)
+                return true
+            } catch {
+                return false
+            }
+        }
+        return false
+    }
+    
 
     // MARK: - ARSessionDelegate
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
@@ -219,42 +223,58 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         if isPressed {
             isPressed = false
             infoText.text = "Frames Captured: \(framesCapturedCount + 1)"
-            let rawFeaturePoints2 = frame.rawFeaturePoints?.points
+            let rawFeaturePoints = frame.rawFeaturePoints?.points
+            
+            // Debug image needs to be rotated to match the view of ARKit. See: https://developer.apple.com/documentation/uikit/uiimage/orientation
             compositedImage = CIImage(cvPixelBuffer: frame.capturedImage)
             let _orientationTransform = compositedImage.orientationTransform(for: .right)
             compositedImage = compositedImage.transformed(by: _orientationTransform)
-                        
-            for point in rawFeaturePoints2 ?? [] {
+            let filename = "frame\(framesCapturedCount).jpeg"
+            var featurePointsData = FeaturePointsData(filePath: filename)
+            
+            let successSavingImage = saveImage(capturedImage: frame.capturedImage, orientationTransform: _orientationTransform)
+            // if image cannot be saved, don't process points
+            if successSavingImage {
+                // save image and camera intrinsics, extrinsics
+                let capturedFrameData = CapturedFrameData(arFrame: frame, filename: "frame\(framesCapturedCount).jpeg")
+                capturedDataArr.append(capturedFrameData)
+                
+                // process feature points
+                for point in rawFeaturePoints ?? [] {
 
-                
-                let interfaceOrientation = arView.window?.windowScene?.interfaceOrientation
-                
-                let euclidianImageSpacePosition = useViewMatrix(point: SIMD3<Float>(point), arCamera: frame.camera, orientation: interfaceOrientation ?? .landscapeLeft)
-                
-                let translatedPoint = translatePoint(x: euclidianImageSpacePosition.x, y: euclidianImageSpacePosition.y, width: Float(frame.camera.imageResolution.width), height: Float(frame.camera.imageResolution.height))
-                                
-                // Used to match the rotate the featurePoints in the same way the image
-                // See https://developer.apple.com/documentation/corefoundation/cgaffinetransform
-                
-                let x = Float(_orientationTransform.a) * translatedPoint.x + Float(_orientationTransform.c) * translatedPoint.y + Float(_orientationTransform.tx)
-                let y = Float(_orientationTransform.b) * translatedPoint.x + Float(_orientationTransform.d) * translatedPoint.y + Float(_orientationTransform.ty)
-                
-               
-                // The if condition is a bit confusing, but it is correct.
-                // The ImageView is 1920x1440 however, we are plotting on top of it an image that is 1440x1920
-                // if you check (0...1920).contains(x) && (0...1440).contains(y) you will end up with some feature points outside of the image
-                if (0...Float(frame.camera.imageResolution.width)).contains(y) && (0...Float(frame.camera.imageResolution.height)).contains(x) {
+                    let interfaceOrientation = arView.window?.windowScene?.interfaceOrientation
                     
-                    debugImage = CIImage(color: .red).cropped(to: .init(origin: CGPoint(x: CGFloat(x), y: CGFloat(y)),
-                                                                        size: .init(width: 20, height: 20)))
-
-                    compositedImage = debugImage.composited(over: compositedImage)
+                    let processedPoint = processPoint(point: point, arCamera: frame.camera, orientation: interfaceOrientation ?? .landscapeLeft, orientationTransform: _orientationTransform)
+                    let x = processedPoint.x
+                    let y = processedPoint.y
+                    // The if condition is a bit confusing, but it is correct.
+                    // The ImageView is 1920x1440 however, we are plotting on top of it an image that is 1440x1920
+                    // if you check (0...1920).contains(x) && (0...1440).contains(y) you will end up with some feature points outside of the image
+                    if (0...Float(frame.camera.imageResolution.width)).contains(y) && (0...Float(frame.camera.imageResolution.height)).contains(x) {
+                        
+                        // Debug Image has the origin in the bottom left, python normally reads the images from top-left, correct that when exporting
+                        let featurePoint = FeaturePoint(x: processedPoint.x, y: Float(frame.camera.imageResolution.width) - processedPoint.y, z: processedPoint.z)
+                        featurePointsData.featurePoints.append(featurePoint)
+                        // add the feature point to properly debug the projections
+                        debugImage = CIImage(color: .red).cropped(to: .init(origin: CGPoint(x: CGFloat(x), y: CGFloat(y)),
+                                                                            size: .init(width: 20, height: 20)))
+                        compositedImage = debugImage.composited(over: compositedImage)
+                    }
+                    
                 }
                 
+                // append all feature points of one frame to the global variable containing all info for all frames
+                rawFeaturePointsArr.append(featurePointsData)
+                
+                // update debug visualization with new featurePoints for captured frame
+                DispatchQueue.main.async { [unowned self] in
+                    imageView.image = UIImage(ciImage: compositedImage)
+                }
+                lastFrame = frame
+                framesCapturedCount += 1
+                
             }
-            DispatchQueue.main.async { [unowned self] in
-                imageView.image = UIImage(ciImage: compositedImage)
-            }
+            
         }
         
     }
