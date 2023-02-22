@@ -2,6 +2,8 @@
 
 Simple app to acquire camera extrinsics, intrinsics and [rawFeaturePoints](https://developer.apple.com/documentation/arkit/arframe/2887449-rawfeaturepoints) using Apple's ARKit.
 
+**Important**: Use the app only in Landscape (left) mode, due to how the images are acquired, the correct feature points are exported only while using landscape left mode. More info [here](https://developer.apple.com/documentation/uikit/uiimage/orientation)
+
 Usage Instructions:
 - Press "Capture" to acquire one frame
 - Press "Save Data" to save all the captured frames to memory.
