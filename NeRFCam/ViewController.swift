@@ -178,33 +178,27 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         return featurePoint
     }
     
-    func processPoint(point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation, orientationTransform: CGAffineTransform) -> FeaturePoint {
+    func processPoint(point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation) -> FeaturePoint {
         /**
          Project one feature point in the correct coordinate system to be plotted on top of the captured images
          */
         let euclidianImageSpacePosition = projectPoint(point: SIMD3<Float>(point), arCamera: arCamera, orientation:  orientation)
         let translatedPoint = translatePoint(x: euclidianImageSpacePosition.x, y: euclidianImageSpacePosition.y, width: Float(arCamera.imageResolution.width), height: Float(arCamera.imageResolution.height))
+
         
-        // Used to match the rotate the featurePoints in the same way the image
-        // See https://developer.apple.com/documentation/corefoundation/cgaffinetransform
-        
-        let x = Float(orientationTransform.a) * translatedPoint.x + Float(orientationTransform.c) * translatedPoint.y + Float(orientationTransform.tx)
-        let y = Float(orientationTransform.b) * translatedPoint.x + Float(orientationTransform.d) * translatedPoint.y + Float(orientationTransform.ty)
-        
-        return FeaturePoint(x: x, y: y, z: euclidianImageSpacePosition.z)
+        return FeaturePoint(x: translatedPoint.x, y: translatedPoint.y, z: euclidianImageSpacePosition.z)
     }
     
-    func saveImage(capturedImage: CVPixelBuffer, orientationTransform: CGAffineTransform) -> Bool {
+    func saveImage(capturedImage: CVPixelBuffer) -> Bool {
         // rotate image to match the view of ARKit
         let capturedFrame = CIImage(cvPixelBuffer: capturedImage)
-        let rotatedImage = capturedFrame.transformed(by: orientationTransform)
         
         // createa a CGImage
-        let cgImage = context.createCGImage(rotatedImage, from: rotatedImage.extent)!
+        let cgImage = context.createCGImage(capturedFrame, from: capturedFrame.extent)!
         let image = UIImage(cgImage: cgImage)
         
         if let data = image.jpegData(compressionQuality: 1.0) {
-            let filename = dataPath.appendingPathComponent("frame\(framesCapturedCount).jpeg")
+            let filename = dataPath.appendingPathComponent(String(format: "frame_%05d.jpeg", framesCapturedCount+1))
             do {
                 try data.write(to: filename)
                 return true
@@ -228,15 +222,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             // Debug image needs to be rotated to match the view of ARKit. See: https://developer.apple.com/documentation/uikit/uiimage/orientation
             compositedImage = CIImage(cvPixelBuffer: frame.capturedImage)
             let _orientationTransform = compositedImage.orientationTransform(for: .right)
-            compositedImage = compositedImage.transformed(by: _orientationTransform)
-            let filename = "frame\(framesCapturedCount).jpeg"
-            var featurePointsData = FeaturePointsData(filePath: filename)
+            //compositedImage = compositedImage.transformed(by: _orientationTransform)
+            let filename = String(format: "frame_%05d.jpeg", framesCapturedCount + 1)
+            var featurePointsData = FeaturePointsData(file_path: filename)
             
-            let successSavingImage = saveImage(capturedImage: frame.capturedImage, orientationTransform: _orientationTransform)
-            // if image cannot be saved, don't process points
-            if successSavingImage {
+            let successSavingImage = saveImage(capturedImage: frame.capturedImage)
+            // if image cannot be saved or there are no feature points in this image, skip, don't process points
+            if successSavingImage && rawFeaturePoints?.count ?? 0 > 0 {
                 // save image and camera intrinsics, extrinsics
-                let capturedFrameData = CapturedFrameData(arFrame: frame, filename: "frame\(framesCapturedCount).jpeg")
+                let capturedFrameData = CapturedFrameData(arFrame: frame, filename: filename)
                 capturedDataArr.append(capturedFrameData)
                 
                 // process feature points
@@ -244,16 +238,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
 
                     let interfaceOrientation = arView.window?.windowScene?.interfaceOrientation
                     
-                    let processedPoint = processPoint(point: point, arCamera: frame.camera, orientation: interfaceOrientation ?? .landscapeLeft, orientationTransform: _orientationTransform)
+                    let processedPoint = processPoint(point: point, arCamera: frame.camera, orientation: interfaceOrientation ?? .landscapeLeft)
                     let x = processedPoint.x
                     let y = processedPoint.y
-                    // The if condition is a bit confusing, but it is correct.
-                    // The ImageView is 1920x1440 however, we are plotting on top of it an image that is 1440x1920
-                    // if you check (0...1920).contains(x) && (0...1440).contains(y) you will end up with some feature points outside of the image
-                    if (0...Float(frame.camera.imageResolution.width)).contains(y) && (0...Float(frame.camera.imageResolution.height)).contains(x) {
+                    
+                    
+                    if (0...Float(frame.camera.imageResolution.width)).contains(x) && (0...Float(frame.camera.imageResolution.height)).contains(y) {
                         
                         // Debug Image has the origin in the bottom left, python normally reads the images from top-left, correct that when exporting
-                        let featurePoint = FeaturePoint(x: processedPoint.x, y: Float(frame.camera.imageResolution.width) - processedPoint.y, z: processedPoint.z)
+                        let featurePoint = FeaturePoint(x: processedPoint.x, y: Float(frame.camera.imageResolution.height) - processedPoint.y, z: processedPoint.z)
                         featurePointsData.featurePoints.append(featurePoint)
                         // add the feature point to properly debug the projections
                         debugImage = CIImage(color: .red).cropped(to: .init(origin: CGPoint(x: CGFloat(x), y: CGFloat(y)),

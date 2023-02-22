@@ -11,7 +11,7 @@ import ARKit
 
 struct FeaturePointsData: Codable {
     var featurePoints: Array<FeaturePoint> = []
-    let filePath: String
+    let file_path: String
 }
 
 struct FeaturePoint: Codable {
