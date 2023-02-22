@@ -12,7 +12,7 @@ The saved data is in the files app -> NERFCam -> Folder with the timestamp that 
 
 - All captured frames (naming is frame_%05d.jpeg)
 - A transforms.json following the nerfstudio data format. See [here](https://docs.nerf.studio/en/latest/quickstart/data_conventions.html)
-- A rawFeaturePoints.json (in millimiters and +Z) with the feature points for each frame with format:
+- A rawFeaturePoints.json. The x and y coordinates are pixel poisitions, the z is millimiters from the camera (positive) with the feature points for each frame with format:
 ```
 [{"file_path": "frame_00001.jpeg", 
   "featurePoints": [{"x": 408.92, "y": 245.83, "z": 265.33}, 
