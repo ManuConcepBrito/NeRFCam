@@ -25,6 +25,7 @@
 		642657122917D9D700E6F23D /* NeRFData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 642657112917D9D700E6F23D /* NeRFData.swift */; };
 		64265716292A7DBA00E6F23D /* ARKit+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64265715292A7DBA00E6F23D /* ARKit+Utilities.swift */; };
 		64265718292A7E0200E6F23D /* CoreImage+Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64265717292A7E0200E6F23D /* CoreImage+Utility.swift */; };
+		64CBD2032993D5820044B332 /* FeaturePointsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CBD2022993D5820044B332 /* FeaturePointsData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		642657112917D9D700E6F23D /* NeRFData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeRFData.swift; sourceTree = "<group>"; };
 		64265715292A7DBA00E6F23D /* ARKit+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ARKit+Utilities.swift"; sourceTree = "<group>"; };
 		64265717292A7E0200E6F23D /* CoreImage+Utility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreImage+Utility.swift"; sourceTree = "<group>"; };
+		64CBD2022993D5820044B332 /* FeaturePointsData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeaturePointsData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +123,7 @@
 				6417D410290DD126004A6DF9 /* AppDelegate.swift */,
 				6417D412290DD126004A6DF9 /* SceneDelegate.swift */,
 				6417D47F290EC7DB004A6DF9 /*  CapturedImageSampler.swift .swift */,
+				64CBD2022993D5820044B332 /* FeaturePointsData.swift */,
 				6417D48C29141B9F004A6DF9 /* CapturedFrameData.swift */,
 				6417D414290DD126004A6DF9 /* ViewController.swift */,
 				642657112917D9D700E6F23D /* NeRFData.swift */,
@@ -304,6 +307,7 @@
 				6417D480290EC7DB004A6DF9 /*  CapturedImageSampler.swift .swift in Sources */,
 				64265718292A7E0200E6F23D /* CoreImage+Utility.swift in Sources */,
 				642657122917D9D700E6F23D /* NeRFData.swift in Sources */,
+				64CBD2032993D5820044B332 /* FeaturePointsData.swift in Sources */,
 				6417D4842912828C004A6DF9 /* SendDataViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

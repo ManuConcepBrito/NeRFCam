@@ -6,8 +6,10 @@
 //
 
 import UIKit
+import CoreImage
 import SceneKit
 import ARKit
+import UniformTypeIdentifiers
 
 class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
 
@@ -16,6 +18,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBOutlet weak var infoText: UILabel!
     @IBOutlet weak var arView: ARSCNView!
     @IBOutlet weak var parentView: UIView!
+    
+    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var gestureRecognizer: UITapGestureRecognizer!
     
     var isPressed: Bool = false
@@ -30,18 +34,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var rawFeaturePointsArr: Array<FeaturePointsData> = []
     // hack to get the last intrinsics, just as POC to try out NerfStudio
     var lastFrame: ARFrame!
-    //<ARFrame: 0x100b63bb0 timestamp=123957.421347 capturedImage=0x282e34d10 camera=0x2825b0100 lightEstimate=0x2819a2260 | 1 anchor, 20 features>
+    var context: CIContext!
     
     var dataPath: URL!
+    
+    var compositedImage: CIImage!
+    var debugImage: CIImage!
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        context = CIContext()
         
     }
     
-    /// - Tag: StartARSession
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // clean state if the user goes back
         framesCapturedCount = 0
@@ -60,8 +67,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         // Start the view's AR session with a configuration that uses the rear camera,
         // device position and orientation tracking, and plane detection.
         let configuration = ARWorldTrackingConfiguration()
-        // TODO: Is this correct? It didn't change anything
-        configuration.worldAlignment = ARConfiguration.WorldAlignment.camera
         
         configuration.planeDetection = [.horizontal, .vertical]
 
@@ -77,7 +82,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
         // Show debug UI to view performance metrics (e.g. frames per second).
         arView.showsStatistics = true
-        
     }
     
     @IBAction func captureFrame(_ sender: Any) {
@@ -148,35 +152,122 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
     }
     
-  
+
+    func translatePoint(x: Float, y: Float, width: Float, height: Float) -> SIMD2<Float> {
+        
+        return SIMD2(width - x, height - y)
+    }
+    
+    func projectPoint(point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation) -> FeaturePoint {
+        // Project Point from 3D World to 3D Camera Space
+        let projectedPoint = arCamera.transform.inverse * SIMD4<Float>(point, 1)
+        
+        // distance from the camera in millimiters (positive away from the camera)
+        let depth = projectedPoint.z * -1 * 1000
+        
+        // Convert to 3x1 Array, fourth component is 1
+        let projectedPointNormalized = (projectedPoint / projectedPoint.w)[SIMD3(0,1,2)]
+        
+        // Convert to 2D Image Space
+        let homogenousImageSpacePosition = arCamera.intrinsics * projectedPointNormalized
+        
+        let euclidianImageSpacePosition = homogenousImageSpacePosition / homogenousImageSpacePosition.z
+        
+        let featurePoint = FeaturePoint(x: euclidianImageSpacePosition.x, y: euclidianImageSpacePosition.y, z: depth)
+        
+        return featurePoint
+    }
+    
+    func processPoint(point: SIMD3<Float>, arCamera: ARCamera, orientation: UIInterfaceOrientation) -> FeaturePoint {
+        /**
+         Project one feature point in the correct coordinate system to be plotted on top of the captured images
+         */
+        let euclidianImageSpacePosition = projectPoint(point: SIMD3<Float>(point), arCamera: arCamera, orientation:  orientation)
+        let translatedPoint = translatePoint(x: euclidianImageSpacePosition.x, y: euclidianImageSpacePosition.y, width: Float(arCamera.imageResolution.width), height: Float(arCamera.imageResolution.height))
+
+        
+        return FeaturePoint(x: translatedPoint.x, y: translatedPoint.y, z: euclidianImageSpacePosition.z)
+    }
+    
+    func saveImage(capturedImage: CVPixelBuffer) -> Bool {
+        // rotate image to match the view of ARKit
+        let capturedFrame = CIImage(cvPixelBuffer: capturedImage)
+        
+        // createa a CGImage
+        let cgImage = context.createCGImage(capturedFrame, from: capturedFrame.extent)!
+        let image = UIImage(cgImage: cgImage)
+        
+        if let data = image.jpegData(compressionQuality: 1.0) {
+            let filename = dataPath.appendingPathComponent(String(format: "frame_%05d.jpeg", framesCapturedCount+1))
+            do {
+                try data.write(to: filename)
+                return true
+            } catch {
+                return false
+            }
+        }
+        return false
+    }
+    
 
     // MARK: - ARSessionDelegate
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        
+        
         if isPressed {
             isPressed = false
             infoText.text = "Frames Captured: \(framesCapturedCount + 1)"
-            // save image data
-            let image = UIImage(pixelBuffer: frame.capturedImage)
+            let rawFeaturePoints = frame.rawFeaturePoints?.points
             
-            if let data = image?.jpegData(compressionQuality: 1.0 ) {
-                let filename = dataPath.appendingPathComponent("frame\(framesCapturedCount).jpeg")
-                
-                // save frame
-                try? data.write(to: filename)
-                let capturedFrameData = CapturedFrameData(arFrame: frame, filename: "frame\(framesCapturedCount).jpeg")
+            // Debug image needs to be rotated to match the view of ARKit. See: https://developer.apple.com/documentation/uikit/uiimage/orientation
+            compositedImage = CIImage(cvPixelBuffer: frame.capturedImage)
+            let _orientationTransform = compositedImage.orientationTransform(for: .right)
+            //compositedImage = compositedImage.transformed(by: _orientationTransform)
+            let filename = String(format: "frame_%05d.jpeg", framesCapturedCount + 1)
+            var featurePointsData = FeaturePointsData(file_path: filename)
+            
+            let successSavingImage = saveImage(capturedImage: frame.capturedImage)
+            // if image cannot be saved or there are no feature points in this image, skip, don't process points
+            if successSavingImage && rawFeaturePoints?.count ?? 0 > 0 {
+                // save image and camera intrinsics, extrinsics
+                let capturedFrameData = CapturedFrameData(arFrame: frame, filename: filename)
                 capturedDataArr.append(capturedFrameData)
                 
-                // save raw feature points
-                let rawFeaturePoints = frame.rawFeaturePoints?.points
-                if rawFeaturePoints != nil {
-                    let featurePointData = FeaturePointsData(arView: arView, arCamera: frame.camera, rawFeaturePoints: rawFeaturePoints ?? [], filename: "frame\(framesCapturedCount).jpeg")
-                    rawFeaturePointsArr.append(featurePointData)
+                // process feature points
+                for point in rawFeaturePoints ?? [] {
+
+                    let interfaceOrientation = arView.window?.windowScene?.interfaceOrientation
+                    
+                    let processedPoint = processPoint(point: point, arCamera: frame.camera, orientation: interfaceOrientation ?? .landscapeLeft)
+                    let x = processedPoint.x
+                    let y = processedPoint.y
+                    
+                    
+                    if (0...Float(frame.camera.imageResolution.width)).contains(x) && (0...Float(frame.camera.imageResolution.height)).contains(y) {
+                        
+                        // Debug Image has the origin in the bottom left, python normally reads the images from top-left, correct that when exporting
+                        let featurePoint = FeaturePoint(x: processedPoint.x, y: Float(frame.camera.imageResolution.height) - processedPoint.y, z: processedPoint.z)
+                        featurePointsData.featurePoints.append(featurePoint)
+                        // add the feature point to properly debug the projections
+                        debugImage = CIImage(color: .red).cropped(to: .init(origin: CGPoint(x: CGFloat(x), y: CGFloat(y)),
+                                                                            size: .init(width: 20, height: 20)))
+                        compositedImage = debugImage.composited(over: compositedImage)
+                    }
+                    
                 }
+                
+                // append all feature points of one frame to the global variable containing all info for all frames
+                rawFeaturePointsArr.append(featurePointsData)
+                
+                // update debug visualization with new featurePoints for captured frame
+                DispatchQueue.main.async { [unowned self] in
+                    imageView.image = UIImage(ciImage: compositedImage)
+                }
+                lastFrame = frame
+                framesCapturedCount += 1
                 
             }
             
-            lastFrame = frame
-            framesCapturedCount += 1
         }
         
     }
